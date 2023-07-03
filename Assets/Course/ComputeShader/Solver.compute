@@ -1,0 +1,75 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel AddSourceHeat
+#pragma kernel DiffuseHeat
+#pragma kernel SetBoundaryHeat
+
+#define THREAD_X 16
+#define THREAD_Y 16
+#define THREAD_Z 1
+
+float _ThermalDiffuseCoef;      // 熱拡散係数
+float _DeltaTime;               // タイムステップ
+float _AddingHeatIntensity;     // 熱源の温度
+float _DeltaX;                  // 格子点間隔 (X方向)
+float _DeltaY;                  // 格子点間隔 (Y方向) 
+
+RWTexture2D<float>  _Heat;      // 温度場
+RWTexture2D<float>  _PrevHeat;  // 1ステップ前の温度場
+Texture2D<float>    _Source;    // 熱源入力バッファ
+
+
+// 熱源から温度場に温度を付与.
+[numthreads(THREAD_X, THREAD_Y, THREAD_Z)]
+void AddSourceHeat(uint2 id : SV_DispatchThreadID)
+{
+    uint w, h;
+    _Heat.GetDimensions(w, h);    
+
+    if (id.x < w && id.y < h)
+    {
+        // _AddingHeatIntensity : マウスを1秒間押し続けたとき円の中心に加えられるheatの値
+        // _Source : 重み，円の中心に近いほど1に近い値
+        _Heat[id] += _Source[id] * _AddingHeatIntensity * _DeltaTime;
+        _PrevHeat[id] = _Heat[id];
+    }
+}
+
+// 熱拡散の計算．
+[numthreads(THREAD_X, THREAD_Y, THREAD_Z)]
+void DiffuseHeat(uint2 id : SV_DispatchThreadID)
+{
+    uint w, h;
+    _Heat.GetDimensions(w, h);
+
+    if (id.x < w && id.y < h)
+    {
+        // 中心差分
+        // _DeltaTime*_Diff/(Δx*Δx) < 1/2 を満たすように_DeltaTime, _Diff, Δx, Δy の値を設定しないといけない
+        float powDeltaX = _DeltaX * _DeltaX;
+        float powDeltaY = _DeltaY * _DeltaY;
+        
+        // ここに熱拡散による熱の更新を実装
+    }
+}
+
+// 境界の処理 ノイマン条件
+[numthreads(THREAD_X, THREAD_Y, THREAD_Z)]
+void SetBoundaryHeat(uint2 id : SV_DispatchThreadID)
+{
+    uint w, h;
+    _Heat.GetDimensions(w, h);
+
+    if (id.x < w && id.y < h)
+    {
+        // 4辺の処理．
+        
+        // ここにノイマン条件を実装
+
+        // 4頂点の処理．
+        _Heat[id] = (id.x == 0 && id.y == 0)            ? 0.5 * (_Heat[uint2(1, 0)]         + _Heat[uint2(0, 1)])           : _Heat[id];
+        _Heat[id] = (id.x == 0 && id.y == h - 1)        ? 0.5 * (_Heat[uint2(1, h - 1)]     + _Heat[uint2(0, h - 2)])       : _Heat[id];
+        _Heat[id] = (id.x == w - 1 && id.y == 0)        ? 0.5 * (_Heat[uint2(w - 2, 0)]     + _Heat[uint2(w - 1, 1)])       : _Heat[id];
+        _Heat[id] = (id.x == w - 1 && id.y == h - 1)    ? 0.5 * (_Heat[uint2(w - 2, h - 1)] + _Heat[uint2(w - 1, h - 2)])   : _Heat[id];
+    }
+    
+}
