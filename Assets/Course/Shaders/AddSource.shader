@@ -40,7 +40,7 @@
 					// abs(i.uv - マウス位置のuv座標) <  半径 -> 0 < saturate < =1
 					float2 dpdt = (i.uv - _Source.xy) / _Radius;
 
-					// saturate : clamp [0, 1]　マウス位置に近いほど速度と密度を大きく
+					// saturate : clamp [0, 1]　マウス位置に近いほど温度を大きく
 					return float(saturate(1.0 - dot(dpdt, dpdt)));
 				}
 				ENDCG

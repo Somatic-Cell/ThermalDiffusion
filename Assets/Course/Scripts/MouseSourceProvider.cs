@@ -67,13 +67,13 @@ namespace Course
 
         void NotifySourceTexUpdate()
         {
-            // Solver.csのSorceTexが呼び出されるはず
+            // Solver.csのSorceTexが呼び出される
             OnSourceUpdated.Invoke(addSourceTex);
         }
 
         void NotifyNoSourceTexUpdate()
         {
-            // Solver.csのSorceTexが呼び出されるはず
+            // Solver.csのSorceTexが呼び出される
             OnSourceUpdated.Invoke(null);
         }
 

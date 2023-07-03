@@ -69,13 +69,13 @@ namespace Reference
 
         void NotifySourceTexUpdate()
         {
-            // SolverBase.csのSorceTexが呼び出されるはず
+            // Solver.csのSorceTexが呼び出される
             OnSourceUpdated.Invoke(addSourceTex);
         }
 
         void NotifyNoSourceTexUpdate()
         {
-            // SolverBase.csのSorceTexが呼び出されるはず
+            // Solver.csのSorceTexが呼び出される
             OnSourceUpdated.Invoke(null);
         }
 
