@@ -44,11 +44,13 @@ void DiffuseHeat(uint2 id : SV_DispatchThreadID)
     if (id.x < w && id.y < h)
     {
         // 中心差分
-        // _DeltaTime*_Diff/(Δx*Δx) < 1/2 を満たすように_DeltaTime, _Diff, Δx, Δy の値を設定しないといけない
+        // _DeltaTime*_ThermalDiffuseCoef/(Δx*Δx + Δy*Δy) < 1/4 を満たすように
+        // _DeltaTime, _Diff, Δx, Δy の値を設定しないといけない
         float powDeltaX = _DeltaX * _DeltaX;
         float powDeltaY = _DeltaY * _DeltaY;
         
         // ここに熱拡散による熱の更新を実装
+        // _Heat[id] = ???
     }
 }
 

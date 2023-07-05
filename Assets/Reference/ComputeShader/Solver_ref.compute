@@ -44,12 +44,13 @@ void DiffuseHeat(uint2 id : SV_DispatchThreadID)
     if (id.x < w && id.y < h)
     {
         // 中心差分
-        // _DeltaTime*_Diff/(Δx*Δx) < 1/2 を満たすように_DeltaTime, _Diff, Δx, Δy の値を設定しないといけない
+        // _DeltaTime*_ThermalDiffuseCoef/(Δx*Δx + Δy*Δy) < 1/4 を満たすように
+        // _DeltaTime, _Diff, Δx, Δy の値を設定しないといけない
         float powDeltaX = _DeltaX * _DeltaX;
         float powDeltaY = _DeltaY * _DeltaY;
         _Heat[id] = _PrevHeat[id]
-            + _DeltaTime * _ThermalDiffuseCoef / powDeltaX * (_PrevHeat[int2(id.x - 1, id.y)] + _PrevHeat[int2(id.x + 1, id.y)] - 2 * _PrevHeat[id])
-            + _DeltaTime * _ThermalDiffuseCoef / powDeltaY * (_PrevHeat[int2(id.x, id.y - 1)] + _PrevHeat[int2(id.x, id.y + 1)] - 2 * _PrevHeat[id]);
+            + _DeltaTime * _ThermalDiffuseCoef / powDeltaX * (_PrevHeat[uint2(id.x - 1, id.y)] + _PrevHeat[uint2(id.x + 1, id.y)] - 2 * _PrevHeat[id])
+            + _DeltaTime * _ThermalDiffuseCoef / powDeltaY * (_PrevHeat[uint2(id.x, id.y - 1)] + _PrevHeat[uint2(id.x, id.y + 1)] - 2 * _PrevHeat[id]);
 
     }
 }
